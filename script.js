@@ -1,36 +1,44 @@
 let i = 0;
-let q;
+let newQuestion;
 let correct = 0;
 let wrong = 0;
 let questionList = [
-    {q:"2+2=?", choices:["1", "2", "3", "4"], answer:"4"},
-    {q:"3*2=?", choices:["2", "4", "6", "8"], answer:"6"},
-    {q:"12+2=?", choices:["10", "12", "14", "18"], answer:"14"},
-    {q:"8*3=?", choices:["18", "22", "24", "28"], answer:"24"},
-    {q:"12+8=?", choices:["20", "25", "28", "36"], answer:"20"},
-    {q:"8*6=?", choices:["26", "34", "40", "48"], answer:"24"}
+    {question:"2+2=?", choices:["1", "2", "3", "4"], answer:"4"},
+    {question:"3*2=?", choices:["2", "4", "6", "8"], answer:"6"},
+    {question:"12+2=?", choices:["10", "12", "14", "18"], answer:"14"},
+    {question:"8*3=?", choices:["18", "22", "24", "28"], answer:"24"},
+    {question:"12+8=?", choices:["20", "25", "28", "36"], answer:"20"},
+    {question:"8*6=?", choices:["26", "34", "40", "48"], answer:"48"},
+    {question:"27*3=?", choices:["71", "81", "84", "91"], answer:"81"},
+    {question:"66+27=?", choices:["83", "88", "91", "93"], answer:"93"},
+    {question:"100/4=?", choices:["20", "25", "30", "50"], answer:"25"},
+    {question:"80*6=?", choices:["440", "480", "490", "496"], answer:"480"}
 ]
 
 function Question(questionText, questionChoices, questionAnswer) {
     this.questionText = questionText;
     this.questionChoices = questionChoices;
     this.questionAnswer = questionAnswer;
-} 
+}
 
-function createHtml(q) {
+Question.prototype.checkAnswer = function (answer) {
+    return this.questionAnswer == answer;
+}
+
+function createHtml(newQuestion) {
     let questionText = document.getElementById("question");
-    questionText.innerText=q.questionText;
+    questionText.innerText=newQuestion.questionText;
 
     let questionChoices = document.getElementById("choices");
     questionChoices.innerHTML = "";
 
-    for (let i = 0; i < q.questionChoices[0].length; i++) {
-        var answerBtn = document.createElement("a");
+    for (let i = 0; i < newQuestion.questionChoices[0].length; i++) {
+        let answerBtn = document.createElement("a");
         answerBtn.setAttribute("href","#")
         answerBtn.setAttribute("class","btn btn-primary");
         answerBtn.setAttribute("onclick", "nextQuestion(this)")
         answerBtn.setAttribute("style","margin:10px 10px; width:60px;")
-        answerBtn.innerText=q.questionChoices[0][i]
+        answerBtn.innerText=newQuestion.questionChoices[0][i]
         questionChoices.appendChild(answerBtn)
     }
 
@@ -42,12 +50,12 @@ function resultHtml() {
     document.getElementById("title").innerText="Result";
     document.getElementById("question").remove();
     document.getElementById("questionNumber").remove();
-    var questionChoices = document.getElementById("choices")
+    let questionChoices = document.getElementById("choices")
     questionChoices.innerHTML = "";
     
-    var correctText = document.createElement("p");
-    var wrongText = document.createElement("p");
-    var totalText = document.createElement("p");
+    let correctText = document.createElement("p");
+    let wrongText = document.createElement("p");
+    let totalText = document.createElement("p");
 
     function setAtt(variableText, textType, btnType, resultText) {
         variableText.setAttribute("class",btnType);
@@ -60,8 +68,8 @@ function resultHtml() {
     setAtt(totalText, questionList.length, "btn btn-dark", "Total: ");
 
 
-    var brTag = document.createElement("br");
-    var brTag2 = document.createElement("br");
+    let brTag = document.createElement("br");
+    let brTag2 = document.createElement("br");
 
     questionChoices.appendChild(correctText)
     questionChoices.appendChild(brTag)
@@ -75,29 +83,24 @@ function nextQuestion(answer) {
     
     if (i < questionList.length) {
         i++;
-        checkAnswer(answer.innerText, q.questionAnswer)
+
+        if (newQuestion.checkAnswer(answer.innerText)) {
+            correct++;
+        } else {
+            wrong++;
+        }
     }  
 
     if (i < questionList.length) {
-        q = new Question(questionList[i].q, [questionList[i].choices], questionList[i].answer);
-        q.prototype = Object.create(Question.prototype)
-        createHtml(q)
+        newQuestion = new Question(questionList[i].question, [questionList[i].choices], questionList[i].answer);
+        createHtml(newQuestion)
     }else {
         resultHtml();
     } 
 }
 
-function checkAnswer(answerU, answerQ) {
-    if (answerU==answerQ) {
-        correct++
-    } else {
-        wrong++
-    }
-}
-
-    //First Question //immediate Function 
-    (function () {
-        q = new Question(questionList[i].q, [questionList[i].choices], questionList[i].answer);
-        q.prototype = Object.create(Question.prototype)
-        createHtml(q)
-    }());
+//First Question //immediate Function 
+(function () {
+    newQuestion = new Question(questionList[i].question, [questionList[i].choices], questionList[i].answer);
+    createHtml(newQuestion)
+}());
